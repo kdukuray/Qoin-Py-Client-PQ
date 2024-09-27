@@ -265,8 +265,9 @@ class BlockChain:
 
 
 class Wallet:
-    def __init__(self, wallet_id, private_key="", public_key=""):
+    def __init__(self, wallet_id, name, private_key="", public_key=""):
         self.wallet_id = wallet_id
+        self.name = name
         if private_key and public_key:
             self.private_key = private_key
             self.public_key = public_key

@@ -2,7 +2,7 @@ from blockchain import *
 from InquirerPy import prompt
 
 qoin = BlockChain()
-user = Wallet(0, "", "")
+user = Wallet("John doe", 0, "", "")
 
 
 def load_existing_wallet():
@@ -25,15 +25,24 @@ def load_existing_wallet():
     print("Loading existing wallet...")
     resp = requests.get(f"http://127.0.0.1:8000/postquantum/wallets/{creds['private_key']}/")
     resp = resp.json()
-    user = Wallet(resp.get("wallet_id"), creds["private_key"], creds["public_key"])
+    user = Wallet(resp.get("wallet_id"), resp.get("name", "John Doe"), creds["private_key"], creds["public_key"])
     print(f"Wallet Info ~ Private key: \n{user.private_key}, Public Key: \n{user.public_key}")
 
 
 def create_new_wallet():
     global user
+    user_name_prompt = [
+        {
+            "type": "input",
+            "name": "user_name",
+            "message": "Enter your name:",
+        }
+    ]
+    user_name_resp = prompt(user_name_prompt)
+    user_name = user_name_resp.get("user_name")
     # Create a new wallet
     print("Creating a new wallet...")
-    resp = requests.get("http://127.0.0.1:8000/postquantum/wallets/new/")
+    resp = requests.get(f"http://127.0.0.1:8000/postquantum/wallets/new/{user_name}/")
     resp = resp.json()
     print(resp.get("wallet_id"))
     user = Wallet(resp.get("wallet_id"), resp.get("private_key"), resp.get("public_key"))

@@ -41,6 +41,7 @@ Block.transactions = relationship("Transaction", order_by=Transaction.id, back_p
 class Wallet(Base):
     __tablename__ = 'wallet'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False, default='John Doe')
     private_key = Column(Text, nullable=False)
     public_key = Column(Text, nullable=False)
     balance = Column(Integer, nullable=False)
