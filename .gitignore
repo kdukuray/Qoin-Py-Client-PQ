@@ -1,0 +1,10 @@
+# Ignore __pycache__ directory
+__pycache__/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+
+# Ignore SQLite database files
+*.db
+
