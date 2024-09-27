@@ -1,10 +1,5 @@
 import hashlib
 import uuid
-
-from sqlalchemy.util.preloaded import import_prefix
-
-# from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-# from cryptography.hazmat.primitives import serialization
 from helperfunctions import *
 import json
 import requests
@@ -132,12 +127,7 @@ class BlockChain:
         transaction_is_valid = verify(b64_to_binary(transaction.sender_pub_key),
                                       bytes(transaction.trxn_hash, 'utf-8'),
                                       b64_to_binary(transaction.trxn_signature))
-        # try:
-        #     serialization.load_pem_public_key(bytes(transaction.sender_pub_key.replace("\\n", "\n"), "utf-8"))\
-        #         .verify(b64_to_binary(transaction.trxn_signature), bytes(transaction.trxn_hash, "utf-8"))
-        # except:
-        #     print("Transaction signature is invalid!")
-        #     transaction_is_valid = False
+
 
         return transaction_is_valid
 
@@ -310,11 +300,7 @@ class Wallet:
 
     def sign_transaction(self, transaction: Transaction) -> bytes:
         """Generates transaction signature"""
-        print(self.private_key)
-        print(self.private_key.encode("utf-8"))
         transaction_signature = sign(b64_to_binary(self.private_key), bytes(transaction.trxn_hash, "utf-8"))
-        # transaction_signature = serialization.load_pem_private_key(self.private_key.encode("utf-8"), password=None)\
-        #     .sign(bytes(transaction.trxn_hash, "utf-8"))
         return transaction_signature
 
 
