@@ -26,7 +26,7 @@ def load_existing_wallet():
     resp = requests.get(f"http://127.0.0.1:8000/postquantum/wallets/{creds['private_key']}/")
     resp = resp.json()
     user = Wallet(resp.get("wallet_id"), resp.get("name", "John Doe"), creds["private_key"], creds["public_key"])
-    print(f"Wallet Info ~ Private key: \n{user.private_key}, Public Key: \n{user.public_key}")
+    print(f"Wallet Info ~ Private key: \n{user.private_key[:100]}..., Public Key: \n{user.public_key[:100]}...")
 
 
 def create_new_wallet():
