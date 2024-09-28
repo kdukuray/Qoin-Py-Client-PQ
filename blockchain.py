@@ -9,6 +9,10 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from pqcrypto.sign.dilithium4 import generate_keypair, sign, verify
 
+# Local Server
+# base_url = "http://127.0.0.1:8000/"
+# Aws Server
+base_url = "http://18.218.172.21:8000/"
 
 engine = create_engine("sqlite:///blockchain.db")
 Session = sessionmaker(bind=engine)
@@ -63,7 +67,7 @@ class BlockChain:
         server.
         """
         # Get pending transactions from the server
-        resp = requests.get("http://127.0.0.1:8000/postquantum/transactions/pending/")
+        resp = requests.get(f"{base_url}postquantum/transactions/pending/")
         pending_transactions_list = resp.json()
 
         pending_transactions_from_server = []
@@ -106,7 +110,7 @@ class BlockChain:
 
             # Send the payload to the broadcasting server
             headers = {"Content-type": "application/json"}
-            resp = requests.post("http://127.0.0.1:8000/postquantum/blocks/new/", data=payload, headers=headers)
+            resp = requests.post(f"{base_url}postquantum/blocks/new/", data=payload, headers=headers)
         else:
             print("Unable to verify any of the transactions")
 
@@ -116,7 +120,7 @@ class BlockChain:
         transaction_is_valid: bool = True
 
         # Checks that the sender has the necessary funds to make this transaction
-        resp = requests.get(f"http://127.0.0.1:8000/postquantum/wallets/balance/{transaction.sender_id}/")
+        resp = requests.get(f"{base_url}postquantum/wallets/balance/{transaction.sender_id}/")
         sender_balance = resp.json().get("wallet_balance")
         # Checks that the transaction amount is valid
         if sender_balance < transaction.amount or transaction.amount < 0:
@@ -137,7 +141,7 @@ class BlockChain:
         # Get the last blocks ID
         last_block_id = session.query(db.Block).order_by(desc(db.Block.id)).first().id
         # Get the not synced blocks from the server
-        all_blocks_list = requests.get(f"http://127.0.0.1:8000/postquantum/blocks/after/{last_block_id}/")
+        all_blocks_list = requests.get(f"{base_url}postquantum/blocks/after/{last_block_id}/")
         all_blocks_list = all_blocks_list.json()
         all_blocks = []
         # for each block, serialize its data
@@ -147,7 +151,7 @@ class BlockChain:
             single_block = BlockStruct(block_data.get("id"), block_data.get("hash"), block_data.get("prev_block_hash"))
 
             # Get each blocks transactions
-            all_block_transactions_data = requests.get(f"http://127.0.0.1:8000/postquantum/blocks/{block_obj.id}/transactions/")
+            all_block_transactions_data = requests.get(f"{base_url}postquantum/blocks/{block_obj.id}/transactions/")
             all_block_transactions_data = all_block_transactions_data.json()
             all_block_transactions_are_valid = True
             serialized_transactions = []
@@ -210,7 +214,7 @@ class BlockChain:
 
     def verify_block(self, block_id):
         """Verifies Blocks"""
-        all_block_transactions_data = requests.get(f"http://127.0.0.1:8000/postquantum/blocks/{block_id}/transactions/")
+        all_block_transactions_data = requests.get(f"{base_url}postquantum/blocks/{block_id}/transactions/")
         all_block_transactions_data = all_block_transactions_data.json()
         all_block_transactions_are_valid = True
         serialized_transactions = []
@@ -232,7 +236,7 @@ class BlockChain:
     @staticmethod
     def get_pending_transactions():
         # Get pending transactions from the server
-        resp = requests.get("http://127.0.0.1:8000/postquantum/transactions/pending/")
+        resp = requests.get(f"{base_url}postquantum/transactions/pending/")
         pending_transactions_list = resp.json()
 
         pending_transactions_from_server = []
@@ -273,7 +277,7 @@ class Wallet:
 
     def get_wallet_balance(self):
         """Retrieves the wallet's balance"""
-        resp = requests.get(f"http://127.0.0.1:8000/postquantum/wallets/balance/{self.wallet_id}/")
+        resp = requests.get(f"{base_url}postquantum/wallets/balance/{self.wallet_id}/")
         wallet_balance = resp.json().get("wallet_balance")
         return int(wallet_balance)
 
@@ -288,7 +292,7 @@ class Wallet:
 
         transaction.trxn_signature = binary_to_b64(transaction.trxn_signature)
         payload = json.dumps(transaction.as_dict_for_json())
-        requests.post("http://127.0.0.1:8000/postquantum/transactions/new/", data=payload, headers=headers)
+        requests.post(f"{base_url}postquantum/transactions/new/", data=payload, headers=headers)
 
     @staticmethod
     def generate_transaction_hash(transaction: Transaction) -> str:
