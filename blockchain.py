@@ -9,10 +9,9 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from pqcrypto.sign.dilithium4 import generate_keypair, sign, verify
 
-# Local Server
-# base_url = "http://127.0.0.1:8000/"
-# Aws Server
-base_url = "http://18.218.172.21:8000/"
+# Local Server, Change this to wherever you re
+base_url = "http://127.0.0.1:8000/"
+
 
 engine = create_engine("sqlite:///blockchain.db")
 Session = sessionmaker(bind=engine)
